@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vulkantechnologies</groupId>
+    <artifactId>pike</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>Pike</name>
+    <description>Lightweight high level network library.</description>
+
+    <!-- properties -->
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- modules versions -->
+
+        <!-- dependencies versions -->
+        <modules.commons.version>1.0</modules.commons.version>
+        <modules.client.version>1.0</modules.client.version>
+        <modules.server.version>1.0</modules.server.version>
+    </properties>
+
+    <!-- modules -->
+    <modules>
+        <module>commons</module>
+        <module>client</module>
+        <module>server</module>
+    </modules>
+
+    <!-- dependencies -->
+    <dependencies>
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- jetbrains/annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.1.0</version>
+        </dependency>
+    </dependencies>
+
+    <!-- deployment -->
+    <distributionManagement>
+        <repository>
+            <id>errata-releases</id>
+            <url>https://maven.vulkantechnologies.com/repository/errata-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>errata-snapshots</id>
+            <url>https://maven.vulkantechnologies.com/repository/errata-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- developers -->
+    <developers>
+        <developer>
+            <name>Roch Blondiaux</name>
+            <organizationUrl>https://www.vulkantechnologies.com</organizationUrl>
+            <email>roch.blondiaux@protonmail.com</email>
+        </developer>
+    </developers>
+
+
+</project>
