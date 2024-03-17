@@ -1,10 +1,8 @@
 package com.vulkantechnologies.pike.commons.packet;
 
-public interface Packet {
+import com.vulkantechnologies.pike.commons.utils.binary.Readable;
+import com.vulkantechnologies.pike.commons.utils.binary.Writeable;
 
-    short id();
+public interface Packet extends Writeable, Readable {
 
-    int length();
-
-    byte[] data();
 }
