@@ -1,0 +1,64 @@
+package com.vulkantechnologies.pike.server.codec;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+
+import com.vulkantechnologies.pike.commons.network.channel.codec.PacketCodec;
+import com.vulkantechnologies.pike.commons.packet.ClientboundPacket;
+import com.vulkantechnologies.pike.commons.packet.Packet;
+import com.vulkantechnologies.pike.commons.packet.ServerboundPacket;
+import com.vulkantechnologies.pike.commons.protocol.PacketRegistry;
+import com.vulkantechnologies.pike.commons.utils.binary.BinaryReader;
+import com.vulkantechnologies.pike.commons.utils.binary.BinaryWriter;
+
+public class ClientPacketCodec implements PacketCodec<ClientboundPacket, ServerboundPacket> {
+
+    @Override
+    public ServerboundPacket decode(ByteBuffer in) {
+        if (in.remaining() <= 0) {
+            throw new IllegalArgumentException("Input buffer is empty");
+        }
+        try (BinaryReader reader = new BinaryReader(in)) {
+            int id = reader.readVarInt();
+            Packet packet = PacketRegistry.get((short) id);
+            if (packet == null) {
+                throw new IllegalArgumentException("Invalid packet id: " + id);
+            }
+            if (!(packet instanceof ServerboundPacket serverboundPacket)) {
+                throw new IllegalArgumentException("Invalid packet type: " + packet.getClass().getSimpleName());
+            }
+            serverboundPacket.read(reader);
+            return serverboundPacket;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to decode packet", e);
+        }
+    }
+
+    @Override
+    public void encode(ByteBuffer out, ClientboundPacket message) {
+        short id = PacketRegistry.getId(message);
+
+        try (BinaryWriter writer = new BinaryWriter(out)) {
+            writer.writeVarInt(id);
+            writer.write(message);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to encode packet", e);
+        }
+    }
+
+    @Override
+    public void handlerAdded(SocketChannel channel) {
+
+    }
+
+    @Override
+    public void handlerRemoved(SocketChannel channel) {
+
+    }
+
+    @Override
+    public void exceptionCaught(SocketChannel channel, Throwable cause) {
+        cause.printStackTrace();
+    }
+}

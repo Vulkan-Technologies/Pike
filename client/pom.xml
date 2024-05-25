@@ -16,4 +16,14 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <!-- dependencies -->
+    <dependencies>
+        <!-- pike/commons -->
+        <dependency>
+            <groupId>com.vulkantechnologies</groupId>
+            <artifactId>pike-commons</artifactId>
+            <version>${modules.commons.version}</version>
+        </dependency>
+    </dependencies>
 </project>

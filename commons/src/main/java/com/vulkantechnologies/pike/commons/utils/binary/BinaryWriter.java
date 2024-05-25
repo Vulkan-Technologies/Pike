@@ -128,6 +128,12 @@ public class BinaryWriter extends OutputStream {
         return bytes;
     }
 
+    public ByteBuffer toByteBuffer() {
+        ByteBuffer copy = buffer.duplicate();
+        copy.flip();
+        return copy;
+    }
+
     @Override
     public void write(int b) throws IOException {
         buffer.put((byte) b);
