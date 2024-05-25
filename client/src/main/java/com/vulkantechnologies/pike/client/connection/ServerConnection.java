@@ -10,14 +10,13 @@ import com.vulkantechnologies.pike.commons.network.AbstractNetworkConnection;
 import com.vulkantechnologies.pike.commons.network.channel.ChannelHandler;
 import com.vulkantechnologies.pike.commons.network.channel.handler.encoder.ByteToByteEncoder;
 import com.vulkantechnologies.pike.commons.network.channel.handler.encoder.PacketToByteEncoder;
-import com.vulkantechnologies.pike.commons.network.channel.pipeline.ChannelPipeline;
 import com.vulkantechnologies.pike.commons.packet.ServerboundPacket;
 
 public class ServerConnection extends AbstractNetworkConnection<ServerboundPacket> {
 
 
-    public ServerConnection(UUID uniqueId, SocketChannel channel, ChannelPipeline pipeline) {
-        super(uniqueId, channel, pipeline);
+    public ServerConnection(UUID uniqueId, SocketChannel channel) {
+        super(uniqueId, channel);
     }
 
     @Override

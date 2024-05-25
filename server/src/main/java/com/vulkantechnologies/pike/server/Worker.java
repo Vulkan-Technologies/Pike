@@ -38,6 +38,8 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+
         while (this.server.running()) {
             try {
                 selector.select(key -> {
@@ -55,7 +57,7 @@ public class Worker extends Thread {
                     }
 
                     // Read data
-                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    buffer.clear();
                     try {
                         int read = channel.read(buffer);
                         if (read == -1) {
@@ -68,8 +70,6 @@ public class Worker extends Thread {
 
                         // Pass data through pipeline
                         connection.pipeline().fireChannelRead(buffer);
-
-                        buffer.clear();
                     } catch (IOException e) {
                         connection.disconnect();
                     }

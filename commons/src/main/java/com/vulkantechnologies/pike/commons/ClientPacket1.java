@@ -7,10 +7,12 @@ import com.vulkantechnologies.pike.commons.utils.binary.BinaryReader;
 import com.vulkantechnologies.pike.commons.utils.binary.BinaryWriter;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class ClientPacket1 implements ClientboundPacket {
 
     private String message;

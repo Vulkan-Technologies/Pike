@@ -8,8 +8,6 @@ import java.nio.channels.SocketChannel;
 import java.util.UUID;
 
 import com.vulkantechnologies.pike.commons.network.ConnectionInitializer;
-import com.vulkantechnologies.pike.commons.network.channel.pipeline.ChannelPipeline;
-import com.vulkantechnologies.pike.commons.network.channel.pipeline.DefaultChannelPipeline;
 import com.vulkantechnologies.pike.commons.packet.ClientboundPacket;
 import com.vulkantechnologies.pike.server.ChannelInboundHandler;
 import com.vulkantechnologies.pike.server.Worker;
@@ -39,12 +37,14 @@ public class ClientConnectionInitializer implements ConnectionInitializer<Client
             socket.setSoTimeout(30_000);
         }
 
-        // Create pipeline
-        ChannelPipeline pipeline = new DefaultChannelPipeline(channel);
-        pipeline.addFirst("packet_codec", new ClientPacketCodec())
-                .addLast("inbound", new ChannelInboundHandler());
-
         // Create connection
-        return new ClientConnection(uniqueId, channel, worker, pipeline);
+        ClientConnection connection = new ClientConnection(uniqueId, channel, worker);
+
+        // Setup pipeline
+        connection.pipeline()
+                .addFirst("packet_codec", new ClientPacketCodec())
+                .addLast("inbound", new ChannelInboundHandler(connection));
+
+        return connection;
     }
 }

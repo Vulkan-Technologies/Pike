@@ -2,6 +2,7 @@ package com.vulkantechnologies.pike.client;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,6 +42,9 @@ public class PikeClient {
 
         try {
             this.clientChannel = SocketChannel.open(this.address);
+            this.connection = this.connectionInitializer.initialize(clientChannel);
+
+            this.connection.pipeline().fireChannelActive();
         } catch (IOException e) {
             throw new RuntimeException("Failed to open client channel", e);
         }
@@ -52,15 +56,40 @@ public class PikeClient {
         Check.stateCondition(!initialized.get(), "Client not initialized");
         Check.stateCondition(started.get(), "Client already started");
 
-        // Send messages
-        try {
-            this.connection = this.connectionInitializer.initialize(clientChannel);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize connection", e);
-        }
+        this.started.set(true);
+
+        // Listen for packets
+        new Thread(() -> {
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            while (started.get()) {
+                if (!clientChannel.isOpen() || !clientChannel.isConnected())
+                    return;
+
+                buffer.clear();
+                try {
+                    int read = clientChannel.read(buffer);
+                    if (read == -1) {
+                        connection.disconnect();
+                        return;
+                    } else if (read == 0) {
+                        continue;
+                    }
+
+                    // Prepare buffer for reading
+                    buffer.flip();
+
+                    // Pass data through pipeline
+                    connection.pipeline().fireChannelRead(buffer);
+                } catch (IOException e) {
+                    this.connection.pipeline().fireExceptionCaught(e);
+                    return;
+                }
+            }
+        }, "pike-client").start();
+
+        // Send Packet
         this.connection.sendPacket(new ServerPacket1("Hello, server!"));
 
-        this.started.set(true);
     }
 
     public void stop() {
@@ -83,7 +112,7 @@ public class PikeClient {
         client.start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(10_000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

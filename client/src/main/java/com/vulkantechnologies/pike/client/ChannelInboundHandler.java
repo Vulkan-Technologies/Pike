@@ -1,18 +1,12 @@
-package com.vulkantechnologies.pike.server;
+package com.vulkantechnologies.pike.client;
 
 import java.nio.channels.SocketChannel;
 
 import com.vulkantechnologies.pike.commons.ClientPacket1;
-import com.vulkantechnologies.pike.commons.ServerPacket1;
 import com.vulkantechnologies.pike.commons.packet.Packet;
-import com.vulkantechnologies.pike.server.client.ClientConnection;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public class ChannelInboundHandler implements com.vulkantechnologies.pike.commons.network.channel.ChannelInboundHandler {
 
-    private final ClientConnection connection;
 
     @Override
     public void channelActive(SocketChannel channel) {
@@ -27,9 +21,8 @@ public class ChannelInboundHandler implements com.vulkantechnologies.pike.common
     @Override
     public void channelRead(SocketChannel channel, Packet message) {
         System.out.println("Packet received!");
-        if (message instanceof ServerPacket1) {
-            System.out.println("Packet is instance of ServerPacket1>: " + ((ServerPacket1) message).message());
-            connection.sendPacket(new ClientPacket1("Hello from server!"));
+        if (message instanceof ClientPacket1) {
+            System.out.println("Packet is instance of ClientPacket1: " + ((ClientPacket1) message).message());
         }
     }
 

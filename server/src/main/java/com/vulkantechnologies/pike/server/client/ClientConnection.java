@@ -10,7 +10,6 @@ import com.vulkantechnologies.pike.commons.network.AbstractNetworkConnection;
 import com.vulkantechnologies.pike.commons.network.channel.ChannelHandler;
 import com.vulkantechnologies.pike.commons.network.channel.handler.encoder.ByteToByteEncoder;
 import com.vulkantechnologies.pike.commons.network.channel.handler.encoder.PacketToByteEncoder;
-import com.vulkantechnologies.pike.commons.network.channel.pipeline.ChannelPipeline;
 import com.vulkantechnologies.pike.commons.packet.ClientboundPacket;
 import com.vulkantechnologies.pike.server.Worker;
 
@@ -18,8 +17,8 @@ public class ClientConnection extends AbstractNetworkConnection<ClientboundPacke
 
     private final Worker worker;
 
-    public ClientConnection(UUID uniqueId, SocketChannel channel, Worker worker, ChannelPipeline pipeline) {
-        super(uniqueId, channel, pipeline);
+    public ClientConnection(UUID uniqueId, SocketChannel channel, Worker worker) {
+        super(uniqueId, channel);
         this.worker = worker;
     }
 
@@ -36,6 +35,7 @@ public class ClientConnection extends AbstractNetworkConnection<ClientboundPacke
             }
         }
         try {
+            buffer.flip();
             this.channel.write(buffer);
         } catch (IOException e) {
             throw new RuntimeException("Failed to send packet", e);
