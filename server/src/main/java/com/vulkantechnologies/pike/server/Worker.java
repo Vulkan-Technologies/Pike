@@ -27,7 +27,7 @@ public class Worker extends Thread {
     public Worker(PikeServer server) {
         super("pike-worker-%d".formatted(COUNTER.getAndIncrement()));
         this.server = server;
-        this.connectionInitializer = new ClientConnectionInitializer(this);
+        this.connectionInitializer = new ClientConnectionInitializer(this.server, this);
 
         try {
             this.selector = Selector.open();

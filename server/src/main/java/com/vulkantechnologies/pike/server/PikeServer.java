@@ -15,11 +15,14 @@ import org.jetbrains.annotations.NonBlocking;
 
 import com.vulkantechnologies.pike.commons.utils.Check;
 
+import lombok.Getter;
+
 public class PikeServer {
 
-    private final int workersCount;
     private final List<Worker> workers;
     private final InetSocketAddress address;
+    @Getter
+    private final ServerOptions options;
     private Selector selector;
     private ServerSocketChannel server;
     private int workerIndex;
@@ -28,12 +31,12 @@ public class PikeServer {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    public PikeServer(InetSocketAddress address, int workersCount) {
-        this.address = address;
-        this.workersCount = workersCount;
+    public PikeServer(ServerOptions options) {
+        this.options = options;
+        this.address = InetSocketAddress.createUnresolved(options.host(), options.port());
 
         // Workers
-        Worker[] workers = new Worker[this.workersCount];
+        Worker[] workers = new Worker[this.options.workers()];
         Arrays.setAll(workers, value -> new Worker(this));
         this.workers = List.of(workers);
     }
@@ -137,12 +140,19 @@ public class PikeServer {
     }
 
     private Worker findWorker() {
-        this.workerIndex = ++workerIndex % this.workersCount;
+        this.workerIndex = ++workerIndex % this.options.workers();
         return workers.get(workerIndex);
     }
 
     public static void main(String[] args) throws IOException {
-        PikeServer server = new PikeServer(new InetSocketAddress("localhost", 25565), 4);
+        PikeServer server = new PikeServer(ServerOptions.builder()
+                .timeout(30_000)
+                .tcpNoDelay(true)
+                .receiveBufferSize(32_767)
+                .sendBufferSize(262_143)
+                .host("localhost")
+                .port(25565)
+                .build());
         server.init();
         server.start();
         server.blockingLoop(() -> {
